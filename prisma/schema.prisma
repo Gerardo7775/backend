@@ -80,6 +80,8 @@ model Agencia {
   rfc               String
   direccion_matriz  String
   telefono_contacto String
+  correo            String   @unique
+  password_hash     String
   created_at        DateTime @default(now())
 
   // Relaciones

@@ -1,13 +1,32 @@
-POST http://localhost:3000/agencias
+### REGISTRAR AGENCIA (solo la primera vez)
+POST http://10.170.6.0:3000/agencias/registrar
 Content-Type: application/json
 
 {
-  "nombre_comercial": "Veltur Aventuras",
-  "razon_social": "Veltur Operadora Turística S.A. de C.V.",
-  "rfc": "VELT260518XXX",
-  "direccion_matriz": "Portal 20 de Noviembre, Centro, Toluca, Estado de México",
-  "telefono_contacto": "7221234567"
+  "nombre_comercial": "Veltur Agencias SA",
+  "razon_social": "Veltur SA de CV",
+  "rfc": "VEL2026MX001",
+  "direccion_matriz": "CDMX, México",
+  "telefono_contacto": "+52 55 0000 0000",
+  "correo": "admin@veltur.com",
+  "password": "VE-2026-MX"
 }
+
+###
+
+### LOGIN DE AGENCIA — Devuelve { agencia: { id, nombre_comercial, ... } }
+POST http://10.170.6.0:3000/agencias/login
+Content-Type: application/json
+
+{
+  "correo": "admin@veltur.com",
+  "password": "VE-2026-MX"
+}
+
+###
+
+### DASHBOARD — Sustituye AGENCIA_ID con el id del JSON anterior
+GET http://10.170.6.0:3000/viajes/agencia/e6b4084a-3153-472d-b018-5c9dadcb66d8
 
 ###
 
@@ -15,7 +34,7 @@ POST http://localhost:3000/usuarios
 Content-Type: application/json
 
 {
-  "id_agencia": "5b16231e-385e-4bea-a0e6-2221914fd064",
+  "id_agencia": "e6b4084a-3153-472d-b018-5c9dadcb66d8",
   "nombre_completo": "Gerardo Adan Morelos Medina",
   "correo": "guia.lider@veltur.com",
   "telefono": "5512345678",
@@ -30,7 +49,7 @@ POST http://localhost:3000/viajes
 Content-Type: application/json
 
 {
-  "agencia_id": "5b16231e-385e-4bea-a0e6-2221914fd064",
+  "agencia_id": "e6b4084a-3153-472d-b018-5c9dadcb66d8",
   "nombre_viaje": "Tour Mágico del Estado de México - Grupo 4",
   "distancia_max_global": 50,
   "tiempo_desconexion_global": 10
@@ -42,7 +61,7 @@ POST http://localhost:3000/participantes
 Content-Type: application/json
 
 {
-  "viaje_id": "19452d92-3849-4464-bfed-569dc5bd283c",
+  "viaje_id": "46338a20-911f-46b1-9103-d5efa4e3bc83",
   "folio_acceso": "GTO-4"
 }
 
@@ -52,7 +71,7 @@ POST http://localhost:3000/actividades
 Content-Type: application/json
 
 {
-  "viaje_id": "19452d92-3849-4464-bfed-569dc5bd283c",
+  "viaje_id": "46338a20-911f-46b1-9103-d5efa4e3bc83",
   "nombre_actividad": "Visita al Nevado de Toluca",
   "direccion": "Volcán Xinantécatl, Estado de México",
   "lat": 19.1065,

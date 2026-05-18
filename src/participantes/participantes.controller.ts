@@ -11,4 +11,9 @@ export class ParticipantesController {
   crear(@Body() body: participantesService_1.CrearFolioDto) {
     return this.participantesService.crearFolio(body);
   }
+
+  @Post('login')
+  loginTurista(@Body() body: { folio: string }) {
+    return this.participantesService.validarFolio(body.folio);
+  }
 }

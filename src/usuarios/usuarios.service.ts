@@ -30,4 +30,52 @@ export class UsuariosService {
       },
     });
   }
+
+  async loginGuia(datos: { correo: string; password?: string }) {
+    // Busca al guía en la base de datos (con el correo que creamos hace rato)
+    const guia = await this.prisma.usuario.findFirst({
+      where: {
+        correo: datos.correo,
+      },
+    });
+
+    if (!guia) {
+      throw new Error('Guía no encontrado');
+    }
+
+    // Para la demo, el frontend envía 'password' y en la bd está en 'password_hash' sin encriptar.
+    if (guia.password_hash !== datos.password) {
+      throw new Error('Credenciales incorrectas');
+    }
+
+    return {
+      exito: true,
+      mensaje: '¡Bienvenido a la expedición!',
+      usuario: guia,
+      token: 'token-magico-guia-123',
+    };
+  }
+
+  async loginConFolioYTelefono(datos: { folio: string; telefono: string }) {
+    // 1. En producción aquí validaríamos que el 'folio' coincida con una Agencia real.
+    // 2. Buscamos al guía por su número de teléfono.
+    const guia = await this.prisma.usuario.findFirst({
+      where: {
+        telefono: datos.telefono,
+      },
+    });
+
+    if (!guia) {
+      throw new Error(
+        'No se encontró un guía con este número de teléfono registrado.',
+      );
+    }
+
+    return {
+      exito: true,
+      mensaje: 'Autenticación rápida exitosa',
+      usuario: guia,
+      token: 'token-acceso-rapido-123',
+    };
+  }
 }

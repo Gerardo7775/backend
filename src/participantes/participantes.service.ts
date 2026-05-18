@@ -21,4 +21,33 @@ export class ParticipantesService {
       },
     });
   }
+
+  async validarFolio(folio: string) {
+    const participante = await this.prisma.participanteViaje.findFirst({
+      where: { 
+        folio_acceso: folio 
+      },
+      include: {
+        viaje: {
+          include: {
+            actividades: {
+              orderBy: { hora_programada: 'asc' }
+            }
+          }
+        }
+      }
+    });
+
+    if (!participante) {
+      throw new Error('Folio inválido o viaje no encontrado');
+    }
+
+    return {
+      exito: true,
+      mensaje: '¡Pase de abordar validado!',
+      participante: participante,
+      viaje: participante.viaje,
+      token: 'token-turista-123'
+    };
+  }
 }

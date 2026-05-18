@@ -11,4 +11,14 @@ export class UsuariosController {
   crear(@Body() body: usuariosService_1.CrearUsuarioDto) {
     return this.usuariosService.crearUsuario(body);
   }
+
+  @Post('login')
+  login(@Body() body: any) {
+    return this.usuariosService.loginGuia(body);
+  }
+
+  @Post('login-agencia')
+  loginAgencia(@Body() body: { folio: string; telefono: string }) {
+    return this.usuariosService.loginConFolioYTelefono(body);
+  }
 }
