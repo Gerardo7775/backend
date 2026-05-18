@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS (Estados y Roles)
+// ==========================================
+enum EstadoSuscripcion {
+  ACTIVE
+  EXPIRED
+  GRACE_PERIOD
+}
+
+enum RolUsuario {
+  ADMIN
+  OPERADOR
+  GUIA
+}
+
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+}
+
+enum EstadoViaje {
+  PROGRAMADO
+  EN_CURSO
+  FINALIZADO
+}
+
+enum RolViaje {
+  GUIA_LIDER
+  GUIA_APOYO
+  TURISTA
+}
+
+enum EstadoDigital {
+  PENDING
+  CLAIMED
+}
+
+enum EstadoConexion {
+  ONLINE
+  OFFLINE
+}
+
+enum EstadoActividad {
+  PROGRAMADO
+  EN_CURSO
+  COMPLETADO
+  SOLICITUD_OMISION
+  OMITIDO
+}
+
+enum TipoIncidente {
+  MEDICAL
+  PANIC
+  SECURITY
+  LOGISTICS
+}
+
+enum EstadoIncidente {
+  ABIERTO
+  RESUELTO
+}
+
+// ==========================================
+// MODELOS (Tablas)
+// ==========================================
+
+model Agencia {
+  id                String   @id @default(uuid())
+  nombre_comercial  String
+  razon_social      String
+  rfc               String
+  direccion_matriz  String
+  telefono_contacto String
+  created_at        DateTime @default(now())
+
+  // Relaciones
+  usuarios      Usuario[]
+  suscripciones Suscripcion?
+  viajes        Viaje[]
+}
+
+model Plan {
+  id                    String   @id @default(uuid())
+  nombre_plan           String
+  limite_guias_activos  Int
+  limite_turistas_viaje Int
+
+  // Relaciones
+  suscripciones Suscripcion[]
+}
+
+model Suscripcion {
+  id                 String            @id @default(uuid())
+  agencia_id         String            @unique // 1 a 1 según diagrama
+  plan_id            String
+  estado_suscripcion EstadoSuscripcion
+  fecha_vencimiento  DateTime
+
+  // Relaciones
+  agencia Agencia @relation(fields: [agencia_id], references: [id])
+  plan    Plan    @relation(fields: [plan_id], references: [id])
+}
+
+model Usuario {
+  id                   String        @id @default(uuid())
+  id_agencia           String
+  nombre_completo      String
+  correo               String        @unique
+  telefono             String
+  especialidad_idiomas String?
+  rol                  RolUsuario
+  password_hash        String
+  estado               EstadoUsuario
+  deleted_at           DateTime?
+
+  // Relaciones
+  agencia       Agencia             @relation(fields: [id_agencia], references: [id])
+  participaciones ParticipanteViaje[]
+  incidentes    IncidentLog[]
+  reviews       Review[]
+}
+
+model Turista {
+  id                  String  @id @default(uuid())
+  nombre              String
+  correo              String? @unique
+  telefono            String?
+  riesgos_medicos     String?
+  tipo_sangre         String?
+  contacto_emergencia String?
+
+  // Relaciones
+  participaciones ParticipanteViaje[]
+  incidentes      IncidentLog[]
+  reviews         Review[]
+}
+
+model Viaje {
+  id                        String      @id @default(uuid())
+  agencia_id                String
+  nombre_viaje              String
+  estado                    EstadoViaje
+  distancia_max_global      Int
+  tiempo_desconexion_global Int
+  created_at                DateTime    @default(now())
+
+  // Relaciones
+  agencia         Agencia              @relation(fields: [agencia_id], references: [id])
+  participantes   ParticipanteViaje[]
+  actividades     ActividadInstancia[]
+  incidentes      IncidentLog[]
+  reviews         Review[]
+}
+
+model ParticipanteViaje {
+  id                     String         @id @default(uuid())
+  viaje_id               String
+  usuario_id             String?
+  turista_id             String?
+  rol_en_viaje           RolViaje
+  folio_acceso           String         @unique
+  dispositivo_vinculado  String?
+  estado_digital         EstadoDigital  @default(PENDING)
+  estado_conexion        EstadoConexion @default(OFFLINE)
+  tiempo_ultima_conexion DateTime?
+  estado_fisico          String?        // Ej. A_BORDO
+
+  // Relaciones
+  viaje   Viaje    @relation(fields: [viaje_id], references: [id])
+  usuario Usuario? @relation(fields: [usuario_id], references: [id])
+  turista Turista? @relation(fields: [turista_id], references: [id])
+}
+
+model ActividadInstancia {
+  id                 String          @id @default(uuid())
+  viaje_id           String
+  nombre_actividad   String
+  direccion          String
+  lat                Float
+  lng                Float
+  fecha_programada   DateTime        @db.Date
+  hora_programada    DateTime        @db.Time
+  hora_fin           DateTime        @db.Time
+  estado             EstadoActividad
+  radio_geocerca_mts Int
+  es_rigido          Boolean
+  codigo_vestimenta  String?
+  equipo_recomendado Json?
+  minutos_desviacion Int?
+  motivo_retraso_id  String?
+
+  // Relaciones
+  viaje Viaje @relation(fields: [viaje_id], references: [id])
+}
+
+model IncidentLog {
+  id            String          @id @default(uuid())
+  trip_id       String
+  tourist_id    String?
+  guide_id      String
+  incident_type TipoIncidente
+  lat           Float
+  lng           Float
+  audio_payload String?
+  resolucion    Json?
+  estado        EstadoIncidente @default(ABIERTO)
+  timestamp     DateTime        @default(now())
+
+  // Relaciones
+  viaje   Viaje    @relation(fields: [trip_id], references: [id])
+  turista Turista? @relation(fields: [tourist_id], references: [id])
+  guia    Usuario  @relation(fields: [guide_id], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  viaje_id   String
+  guide_id   String
+  tourist_id String
+  rating     Int
+  comment    String?
+  timestamp  DateTime @default(now())
+
+  // Relaciones
+  viaje   Viaje   @relation(fields: [viaje_id], references: [id])
+  guia    Usuario @relation(fields: [guide_id], references: [id])
+  turista Turista @relation(fields: [tourist_id], references: [id])
+}
