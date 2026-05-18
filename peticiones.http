@@ -1,0 +1,65 @@
+POST http://localhost:3000/agencias
+Content-Type: application/json
+
+{
+  "nombre_comercial": "Veltur Aventuras",
+  "razon_social": "Veltur Operadora Turística S.A. de C.V.",
+  "rfc": "VELT260518XXX",
+  "direccion_matriz": "Portal 20 de Noviembre, Centro, Toluca, Estado de México",
+  "telefono_contacto": "7221234567"
+}
+
+###
+
+POST http://localhost:3000/usuarios
+Content-Type: application/json
+
+{
+  "id_agencia": "5b16231e-385e-4bea-a0e6-2221914fd064",
+  "nombre_completo": "Gerardo Adan Morelos Medina",
+  "correo": "guia.lider@veltur.com",
+  "telefono": "5512345678",
+  "especialidad_idiomas": "Español, Inglés",
+  "rol": "GUIA",
+  "password_hash": "supersecreta123"
+}
+
+###
+
+POST http://localhost:3000/viajes
+Content-Type: application/json
+
+{
+  "agencia_id": "5b16231e-385e-4bea-a0e6-2221914fd064",
+  "nombre_viaje": "Tour Mágico del Estado de México - Grupo 4",
+  "distancia_max_global": 50,
+  "tiempo_desconexion_global": 10
+}
+
+###
+
+POST http://localhost:3000/participantes
+Content-Type: application/json
+
+{
+  "viaje_id": "19452d92-3849-4464-bfed-569dc5bd283c",
+  "folio_acceso": "GTO-4"
+}
+
+###
+
+POST http://localhost:3000/actividades
+Content-Type: application/json
+
+{
+  "viaje_id": "19452d92-3849-4464-bfed-569dc5bd283c",
+  "nombre_actividad": "Visita al Nevado de Toluca",
+  "direccion": "Volcán Xinantécatl, Estado de México",
+  "lat": 19.1065,
+  "lng": -99.7669,
+  "fecha_programada": "2026-06-01T00:00:00Z",
+  "hora_programada": "2026-06-01T10:00:00Z",
+  "hora_fin": "2026-06-01T13:00:00Z",
+  "radio_geocerca_mts": 500,
+  "es_rigido": true
+}
