@@ -63,3 +63,13 @@ Content-Type: application/json
   "radio_geocerca_mts": 500,
   "es_rigido": true
 }
+
+###
+
+POST http://localhost:3000/ia/traducir-menu
+Content-Type: application/json
+
+{
+  "textoEscaneado": "Huarache especial $150",
+  "monedaDestino": "USD"
+}
