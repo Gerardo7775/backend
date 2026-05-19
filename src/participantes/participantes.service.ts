@@ -24,18 +24,18 @@ export class ParticipantesService {
 
   async validarFolio(folio: string) {
     const participante = await this.prisma.participanteViaje.findFirst({
-      where: { 
-        folio_acceso: folio 
+      where: {
+        folio_acceso: folio,
       },
       include: {
         viaje: {
           include: {
             actividades: {
-              orderBy: { hora_programada: 'asc' }
-            }
-          }
-        }
-      }
+              orderBy: { hora_programada: 'asc' },
+            },
+          },
+        },
+      },
     });
 
     if (!participante) {
@@ -47,7 +47,7 @@ export class ParticipantesService {
       mensaje: '¡Pase de abordar validado!',
       participante: participante,
       viaje: participante.viaje,
-      token: 'token-turista-123'
+      token: 'token-turista-123',
     };
   }
 }
